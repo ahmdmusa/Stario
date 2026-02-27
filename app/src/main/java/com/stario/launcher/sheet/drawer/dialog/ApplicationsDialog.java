@@ -100,6 +100,22 @@ public class ApplicationsDialog extends SheetDialogFragment {
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.drawer,
                 container, false);
 
+        float drawerBgOpacity = com.stario.launcher.settings.custom.CustomSettingsDataStore.getValueSync(
+                activity.getApplicationContext(), com.stario.launcher.settings.custom.CustomSettingsDataStore.DRAWER_BG_OPACITY, 0f);
+        if (drawerBgOpacity > 0f) {
+            android.graphics.drawable.GradientDrawable background = new android.graphics.drawable.GradientDrawable();
+            background.setColor(activity.getAttributeData(com.google.android.material.R.attr.colorSurfaceContainer));
+            background.setAlpha((int) (255 * drawerBgOpacity));
+            
+            float radius = Measurements.dpToPx(com.stario.launcher.settings.custom.CustomSettingsDataStore.getValueSync(
+                    activity.getApplicationContext(), com.stario.launcher.settings.custom.CustomSettingsDataStore.CORNER_RADIUS, 24f));
+            background.setCornerRadii(new float[]{
+                radius, radius, radius, radius, 0, 0, 0, 0
+            });
+            root.setBackground(background);
+            root.setClipToOutline(true);
+        }
+
         pager = root.findViewById(R.id.pager);
         search = root.findViewById(R.id.search);
         ViewGroup searchContainer = (ViewGroup) search.getParent();

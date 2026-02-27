@@ -96,17 +96,27 @@ public class LockDetector extends DynamicGridLayout {
 
             if (lastEventTime > 0 &&
                     currentTime - lastEventTime < ViewConfiguration.getDoubleTapTimeout()) {
-                if (isAccessibilitySettingsOn(activity) &&
-                        preferences.getBoolean(PREFERENCE_ENTRY, false)) {
+                
+                int action = com.stario.launcher.settings.custom.CustomSettingsDataStore.getValueSync(
+                        activity.getApplicationContext(), com.stario.launcher.settings.custom.CustomSettingsDataStore.GESTURE_DOUBLE_TAP, 3);
+                
+                if (action == 3) {
+                    if (isAccessibilitySettingsOn(activity) &&
+                            preferences.getBoolean(PREFERENCE_ENTRY, false)) {
 
-                    if (!preferences.getBoolean(LEGACY_ANIMATION, false)) {
-                        getClosingAnimationView()
-                                .closeTo(event.getRawX(), event.getRawY(),
-                                        () -> sleep(activity));
-                    } else {
-                        sleep(activity);
+                        if (!preferences.getBoolean(LEGACY_ANIMATION, false)) {
+                            getClosingAnimationView()
+                                    .closeTo(event.getRawX(), event.getRawY(),
+                                            () -> sleep(activity));
+                        } else {
+                            sleep(activity);
+                        }
+
+                        lastEventTime = NOT_REGISTERED;
+                        return true;
                     }
-
+                } else if (action == 1 || action == 2) {
+                    activity.getSheetsController().executeGestureAction(action);
                     lastEventTime = NOT_REGISTERED;
                     return true;
                 }

@@ -228,6 +228,16 @@ public class Launcher extends ThemedActivity {
                             ActivityOptions.makeSceneTransitionAnimation(activity).toBundle());
                 })));
 
+        menu.add(new PopupMenu.Item("Custom Settings",
+                ResourcesCompat.getDrawable(resources, R.drawable.ic_settings, activity.getTheme()),
+                view -> view.post(() -> {
+                    Intent intent = new Intent(activity, com.stario.launcher.settings.custom.CustomSettingsActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    activity.startActivity(intent,
+                            ActivityOptions.makeSceneTransitionAnimation(activity).toBundle());
+                })));
+
         menu.add(new PopupMenu.Item(resources.getString(R.string.rearrange),
                 ResourcesCompat.getDrawable(resources, R.drawable.ic_move, activity.getTheme()),
                 view -> view.post(() -> {

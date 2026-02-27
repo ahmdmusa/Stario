@@ -45,6 +45,7 @@ import androidx.annotation.Nullable;
 
 import com.stario.launcher.themes.ThemedActivity;
 import com.stario.launcher.utils.Utils;
+import com.stario.launcher.settings.custom.CustomSettingsDataStore;
 
 public class DialogBackgroundDimmingController
         implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -64,6 +65,8 @@ public class DialogBackgroundDimmingController
     private DimmingController dimmingController;
     private boolean hasLimitedResources;
     private Window window;
+    private final float maxBlurSize;
+    private final int maxBackgroundAlpha;
 
     private DialogBackgroundDimmingController(ThemedActivity activity) {
         this.background = new ColorDrawable(
@@ -74,6 +77,12 @@ public class DialogBackgroundDimmingController
         this.powerManager = activity.getSystemService(PowerManager.class);
         this.settings = activity.getApplicationContext().getSettings();
         this.hasLimitedResources = false;
+
+        this.maxBlurSize = CustomSettingsDataStore.getValueSync(activity.getApplicationContext(),
+                CustomSettingsDataStore.BLUR_STRENGTH, 100f);
+        float bgOpacity = CustomSettingsDataStore.getValueSync(activity.getApplicationContext(),
+                CustomSettingsDataStore.BG_OPACITY, 0.75f);
+        this.maxBackgroundAlpha = (int) (255 * bgOpacity);
 
         this.batterySaverReceiver = new BroadcastReceiver() {
             @Override
@@ -113,7 +122,7 @@ public class DialogBackgroundDimmingController
                     }
 
                     if (Utils.isMinimumSDK(Build.VERSION_CODES.S)) {
-                        int blurRadius = (int) (MAX_BLUR_SIZE * factor);
+                        int blurRadius = (int) (controller.maxBlurSize * factor);
 
                         if (blurRadius != lastBlurStep) {
                             controller.window.setBackgroundBlurRadius(blurRadius);
@@ -141,7 +150,7 @@ public class DialogBackgroundDimmingController
 
                 private void updateAlpha(float factor) {
                     controller.background.setAlpha((int) ((controller.hasLimitedResources ?
-                            MAX_BACKGROUND_ALPHA_LOW_SPEC : MAX_BACKGROUND_ALPHA) * factor));
+                            MAX_BACKGROUND_ALPHA_LOW_SPEC : controller.maxBackgroundAlpha) * factor));
                 }
             };
 

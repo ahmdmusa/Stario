@@ -63,6 +63,11 @@ public class List extends ListDrawerPage {
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
 
         fastScroller = rootView.findViewById(R.id.fast_scroller);
+        boolean showScrollbar = com.stario.launcher.settings.custom.CustomSettingsDataStore.getValueSync(
+                activity.getApplicationContext(), com.stario.launcher.settings.custom.CustomSettingsDataStore.DRAWER_SCROLLBAR, true);
+        if (!showScrollbar) {
+            fastScroller.setVisibility(View.GONE);
+        }
 
         AutoGridLayoutManager manager = new AutoGridLayoutManager(activity, 1);
         LayoutSizeObserver.attach(fastScroller, LayoutSizeObserver.WIDTH, new LayoutSizeObserver.OnChange() {
@@ -106,7 +111,13 @@ public class List extends ListDrawerPage {
         }
 
         super.setSelected(selected);
-        fastScroller.animateVisibility(selected);
+        boolean showScrollbar = com.stario.launcher.settings.custom.CustomSettingsDataStore.getValueSync(
+                activity.getApplicationContext(), com.stario.launcher.settings.custom.CustomSettingsDataStore.DRAWER_SCROLLBAR, true);
+        if (showScrollbar) {
+            fastScroller.animateVisibility(selected);
+        } else {
+            fastScroller.setVisibility(View.GONE);
+        }
     }
 
     @Override

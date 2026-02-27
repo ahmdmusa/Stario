@@ -54,6 +54,7 @@ public class DynamicGridLayout extends ViewGroup {
 
     private final GridTemplateManager templateManager;
     private final Map<View, Point> preAnimVisualPos;
+    private final String preferenceKey;
 
     private boolean isRearrangeable;
     private int cellWidth;
@@ -100,6 +101,7 @@ public class DynamicGridLayout extends ViewGroup {
             }
         }
 
+        this.preferenceKey = key;
         this.colCount = MIN_COLS_PORTRAIT;
         this.rowCount = MIN_ROWS_PORTRAIT;
         this.isRearrangeable = false;
@@ -222,16 +224,24 @@ public class DynamicGridLayout extends ViewGroup {
         float density = getResources().getDisplayMetrics().density;
         int minCellSizePx = (int) (MIN_CELL_SIZE_DP * density);
 
-        colCount = Math.max(Measurements.isLandscape()
-                ? MIN_COLS_LANDSCAPE : MIN_COLS_PORTRAIT, availableWidth / minCellSizePx);
-
-        while ((availableWidth / colCount) > (minCellSizePx * 2)) colCount++;
+        if ("homescreen".equals(preferenceKey)) {
+            colCount = com.stario.launcher.settings.custom.CustomSettingsDataStore.getValueSync(
+                    getContext(), com.stario.launcher.settings.custom.CustomSettingsDataStore.GRID_COLS, 5);
+        } else {
+            colCount = Math.max(Measurements.isLandscape()
+                    ? MIN_COLS_LANDSCAPE : MIN_COLS_PORTRAIT, availableWidth / minCellSizePx);
+            while ((availableWidth / colCount) > (minCellSizePx * 2)) colCount++;
+        }
         cellWidth = availableWidth / colCount;
 
-        rowCount = Math.max(Measurements.isLandscape()
-                ? MIN_ROWS_LANDSCAPE : MIN_ROWS_PORTRAIT, availableHeight / minCellSizePx);
-
-        while ((availableHeight / rowCount) > (minCellSizePx * 2)) rowCount++;
+        if ("homescreen".equals(preferenceKey)) {
+            rowCount = com.stario.launcher.settings.custom.CustomSettingsDataStore.getValueSync(
+                    getContext(), com.stario.launcher.settings.custom.CustomSettingsDataStore.GRID_ROWS, 5);
+        } else {
+            rowCount = Math.max(Measurements.isLandscape()
+                    ? MIN_ROWS_LANDSCAPE : MIN_ROWS_PORTRAIT, availableHeight / minCellSizePx);
+            while ((availableHeight / rowCount) > (minCellSizePx * 2)) rowCount++;
+        }
         cellHeight = availableHeight / rowCount;
 
         if (colCount != lastMeasuredCols || rowCount != lastMeasuredRows) {

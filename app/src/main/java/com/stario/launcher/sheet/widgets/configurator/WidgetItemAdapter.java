@@ -237,13 +237,13 @@ public class WidgetItemAdapter extends RecyclerView.Adapter<WidgetItemAdapter.Vi
 
             if (previewImage == null) {
                 previewImage = entry.icon;
-                params.height = AdaptiveIconView.getMaxIconSize();
+                params.height = AdaptiveIconView.getMaxIconSize(activity);
             } else {
                 params.height = 0;
                 params.dimensionRatio = "W," + ((float) previewImage.getIntrinsicHeight() /
                         previewImage.getIntrinsicWidth()) + "f";
                 params.matchConstraintMaxHeight = Math.min(params.matchConstraintMaxHeight,
-                        Math.max(AdaptiveIconView.getMaxIconSize(), previewImage.getIntrinsicHeight()));
+                        Math.max(AdaptiveIconView.getMaxIconSize(activity), previewImage.getIntrinsicHeight()));
             }
 
             ImageView imageView = new ImageView(activity);

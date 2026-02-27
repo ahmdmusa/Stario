@@ -160,6 +160,12 @@ public class SearchFragment extends Fragment {
         searchContainer = root.findViewById(R.id.search_container);
         webContainer = root.findViewById(R.id.web_container);
         search = root.findViewById(R.id.search);
+
+        boolean drawerSearchVisible = com.stario.launcher.settings.custom.CustomSettingsDataStore.getValueSync(
+                activity.getApplicationContext(), com.stario.launcher.settings.custom.CustomSettingsDataStore.DRAWER_SEARCH, true);
+        if (!drawerSearchVisible) {
+            searchContainer.setVisibility(View.GONE);
+        }
         content = root.findViewById(R.id.content);
         base = root.findViewById(R.id.base);
 
@@ -552,7 +558,9 @@ public class SearchFragment extends Fragment {
 
             startPostponedEnterTransition();
 
-            search.post(() -> UiUtils.showKeyboard(search));
+            if (drawerSearchVisible) {
+                search.post(() -> UiUtils.showKeyboard(search));
+            }
         });
 
         return root;

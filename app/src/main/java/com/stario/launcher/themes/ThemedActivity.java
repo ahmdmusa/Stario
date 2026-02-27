@@ -58,6 +58,7 @@ import com.stario.launcher.ui.Measurements;
 import com.stario.launcher.ui.utils.UiUtils;
 import com.stario.launcher.ui.utils.animation.Animation;
 import com.stario.launcher.utils.Utils;
+import com.stario.launcher.settings.custom.CustomSettingsDataStore;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -78,6 +79,7 @@ abstract public class ThemedActivity extends AppCompatActivity {
     private boolean allowTouches;
     private int backgroundColor;
     private Theme theme;
+    private float customCornerRadius;
 
     public ThemedActivity() {
         this.allowTouches = true;
@@ -108,8 +110,11 @@ abstract public class ThemedActivity extends AppCompatActivity {
 
         backgroundColor = getAttributeData(com.google.android.material.R.attr.colorSurface);
 
+        customCornerRadius = CustomSettingsDataStore.getValueSync(getApplicationContext(),
+                CustomSettingsDataStore.CORNER_RADIUS, 30f);
+
         roundedCornerBackground = new PaintDrawable(backgroundColor);
-        roundedCornerBackground.setCornerRadius(Measurements.dpToPx(30));
+        roundedCornerBackground.setCornerRadius(Measurements.dpToPx(customCornerRadius));
 
         Window window = getWindow();
 
@@ -196,7 +201,7 @@ abstract public class ThemedActivity extends AppCompatActivity {
                                 root.setScaleY(1f - progress * 0.15f);
 
                                 roundedCornerBackground.setCornerRadius((float) (Measurements.dpToPx(10) +
-                                        Math.pow(progress, 0.3f) * Measurements.dpToPx(20)));
+                                        Math.pow(progress, 0.3f) * Measurements.dpToPx(Math.max(0, customCornerRadius - 10f))));
                             }
                         }
                     }
@@ -272,7 +277,7 @@ abstract public class ThemedActivity extends AppCompatActivity {
                     backgroundAnimator.pause();
                 }
 
-                backgroundAnimator = ValueAnimator.ofFloat(30, 0);
+                backgroundAnimator = ValueAnimator.ofFloat(customCornerRadius, 0);
                 backgroundAnimator.setInterpolator(new AccelerateInterpolator(2));
                 backgroundAnimator.setDuration((int) (Animation.EXTENDED.getDuration() *
                         Measurements.getTransitionAnimationScale() /
@@ -400,6 +405,17 @@ abstract public class ThemedActivity extends AppCompatActivity {
 
         Resources.Theme wrappedTheme = getThemeFor(theme, forceDark);
         wrappedTheme.resolveAttribute(attr, typedValue, true);
+
+        if (attr == com.google.android.material.R.attr.colorPrimary || attr == android.R.attr.colorAccent) {
+            String customColor = CustomSettingsDataStore.getValueSync(
+                    this, CustomSettingsDataStore.PRIMARY_COLOR, "");
+            if (!customColor.isEmpty()) {
+                try {
+                    return Color.parseColor(customColor);
+                } catch (Exception ignore) {
+                }
+            }
+        }
 
         return typedValue.data;
     }

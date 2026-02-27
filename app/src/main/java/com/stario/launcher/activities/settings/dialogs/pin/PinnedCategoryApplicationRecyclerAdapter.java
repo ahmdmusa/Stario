@@ -43,7 +43,7 @@ public class PinnedCategoryApplicationRecyclerAdapter extends RecyclerApplicatio
 
         @Override
         protected void onInflated() {
-            itemView.getLayoutParams().width = AdaptiveIconView.getMaxIconSize()
+            itemView.getLayoutParams().width = AdaptiveIconView.getMaxIconSize(itemView.getContext())
                     + Measurements.getDefaultPadding();
 
             super.onInflated();

@@ -48,6 +48,7 @@ import com.stario.launcher.preferences.Entry;
 import com.stario.launcher.ui.Measurements;
 import com.stario.launcher.utils.Utils;
 import com.stario.launcher.utils.objects.ObjectDelegate;
+import com.stario.launcher.settings.custom.CustomSettingsDataStore;
 
 import java.io.Serializable;
 
@@ -190,13 +191,14 @@ public class AdaptiveIconView extends View {
         }
     }
 
-    public static int getMaxIconSize() {
-        return Measurements.dpToPx(60);
+    public static int getMaxIconSize(Context context) {
+        float multiplier = CustomSettingsDataStore.getValueSync(context, CustomSettingsDataStore.ICON_SIZE, 1f);
+        return (int) (Measurements.dpToPx(60) * multiplier);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int maxIconSize = getMaxIconSize();
+        int maxIconSize = getMaxIconSize(getContext());
         int measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
         int measuredHeight = MeasureSpec.getSize(heightMeasureSpec);
 
@@ -322,7 +324,7 @@ public class AdaptiveIconView extends View {
             alternateBadge.setBounds((int) (inset * 0.6), (int) (inset * 0.6), inset, inset);
 
             shadowPaint.setShadowLayer(
-                    ((float) size / getMaxIconSize()) * MAX_SHADOW_SIZE * 0.75f,
+                    ((float) size / getMaxIconSize(getContext())) * MAX_SHADOW_SIZE * 0.75f,
                     0, 0, Color.argb(100, 0, 0, 0)
             );
         }

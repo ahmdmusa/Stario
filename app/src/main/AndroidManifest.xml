@@ -65,6 +65,16 @@
             android:theme="@style/Theme.Light.Blue.Opaque" />
 
         <activity
+            android:name=".settings.custom.CustomSettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Light.Blue.Opaque" />
+
+        <activity
+            android:name=".settings.custom.CategoriesSettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Light.Blue.Opaque" />
+
+        <activity
             android:name=".activities.pages.PageManager"
             android:allowEmbedded="false"
             android:alwaysRetainTaskState="false"

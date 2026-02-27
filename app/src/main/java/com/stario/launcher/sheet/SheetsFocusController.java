@@ -207,7 +207,25 @@ public class SheetsFocusController extends ConstraintLayout {
                                 Math.abs(deltaY) >= moveSlop)) {
                     if (sheetType == null) {
                         if (Math.abs(deltaY) > Math.abs(deltaX)) {
-                            sheetType = Math.signum(deltaY) >= 0 ? SheetType.BOTTOM_SHEET : SheetType.TOP_SHEET;
+                            boolean swipeUp = Math.signum(deltaY) >= 0;
+                            int action = com.stario.launcher.settings.custom.CustomSettingsDataStore.getValueSync(
+                                getContext(), 
+                                swipeUp ? com.stario.launcher.settings.custom.CustomSettingsDataStore.GESTURE_UP : com.stario.launcher.settings.custom.CustomSettingsDataStore.GESTURE_DOWN, 
+                                swipeUp ? 1 : 2
+                            );
+                            
+                            if (action == 0) {
+                                sheetType = SheetType.UNDEFINED;
+                            } else if (action == 1) {
+                                sheetType = SheetType.BOTTOM_SHEET;
+                            } else if (action == 2) {
+                                sheetType = SheetType.TOP_SHEET;
+                            } else if (action == 3) {
+                                sheetType = SheetType.UNDEFINED;
+                                executeGestureAction(3);
+                            } else {
+                                sheetType = swipeUp ? SheetType.BOTTOM_SHEET : SheetType.TOP_SHEET;
+                            }
                         } else {
                             sheetType = Math.signum(deltaX) >= 0 ? SheetType.RIGHT_SHEET : SheetType.LEFT_SHEET;
                         }
@@ -339,6 +357,31 @@ public class SheetsFocusController extends ConstraintLayout {
                     }
                 }
             }
+        }
+    }
+
+    public void executeGestureAction(int action) {
+        if (action == 1) {
+            SheetWrapper wrapper = wrappers[SheetType.BOTTOM_SHEET.ordinal()];
+            if (wrapper != null) {
+                wrapper.show();
+            }
+        } else if (action == 2) {
+            UiUtils.expandStatusBar(getContext());
+        } else if (action == 3) {
+            try {
+                android.view.accessibility.AccessibilityManager manager =
+                        (android.view.accessibility.AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+                android.view.accessibility.AccessibilityEvent event = android.view.accessibility.AccessibilityEvent.obtain();
+                event.setEventType(android.view.accessibility.AccessibilityEvent.TYPE_ANNOUNCEMENT);
+                event.setClassName(getClass().getName());
+                event.setAction(com.stario.launcher.services.AccessibilityService.LOCK);
+
+                if (getContext() instanceof Launcher) {
+                    ((Launcher) getContext()).setShowWhenLocked(true);
+                }
+                manager.sendAccessibilityEvent(event);
+            } catch (Exception e) {}
         }
     }
 

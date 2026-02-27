@@ -37,6 +37,8 @@ import com.stario.launcher.ui.icons.AdaptiveIconView;
 import com.stario.launcher.ui.recyclers.autogrid.AutoGridLayoutManager;
 import com.stario.launcher.ui.utils.LayoutSizeObserver;
 import com.stario.launcher.ui.utils.UiUtils;
+import com.stario.launcher.settings.custom.CustomSettingsDataStore;
+import android.graphics.drawable.GradientDrawable;
 
 public class PinnedCategory {
     public static final String PINNED_CATEGORY_VISIBLE = "com.stario.IS_PINNED_CATEGORY_VISIBLE";
@@ -80,6 +82,19 @@ public class PinnedCategory {
         RelativeLayout root = (RelativeLayout) activity.getLayoutInflater()
                 .inflate(R.layout.pinned_apps, gridItem, false);
         recycler = root.findViewById(R.id.recycler);
+
+        float dockBgOpacity = CustomSettingsDataStore.getValueSync(
+                activity.getApplicationContext(), CustomSettingsDataStore.DOCK_BG_OPACITY, 0f);
+        if (dockBgOpacity > 0f) {
+            GradientDrawable background = new GradientDrawable();
+            background.setColor(activity.getAttributeData(com.google.android.material.R.attr.colorSurfaceContainer));
+            background.setAlpha((int) (255 * dockBgOpacity));
+            float radius = Measurements.dpToPx(CustomSettingsDataStore.getValueSync(
+                    activity.getApplicationContext(), CustomSettingsDataStore.CORNER_RADIUS, 24f));
+            background.setCornerRadius(radius);
+            root.setBackground(background);
+        }
+
         gridItem.addView(root);
 
         listener = (sharedPreferences, key) -> {
@@ -98,7 +113,7 @@ public class PinnedCategory {
             @Override
             public void onChange(View view, int watchFlags, Rect rect) {
                 int columns = MathUtils.clamp(rect.width() /
-                                (AdaptiveIconView.getMaxIconSize()
+                                (AdaptiveIconView.getMaxIconSize(activity)
                                         + Measurements.getDefaultPadding()),
                         1, 6);
 
