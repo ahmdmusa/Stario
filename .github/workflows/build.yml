@@ -1,25 +1,33 @@
-name: Build
+name: Build Stario APK
+
 on:
   push:
-      branches:
-            - main
-              pull_request:
-                workflow_dispatch:
-                jobs:
-                  build:
-                      runs-on: ubuntu-latest
-                          steps:
-                                - uses: actions/checkout@v4
-                                      - name: Debug
-                                              run: cat app/src/main/java/com/stario/launcher/settings/custom/CategoriesSettingsActivity.kt
-                                                    - uses: actions/setup-java@v5
-                                                            with:
-                                                                      distribution: 'temurin'
-                                                                                java-version: '17'
-                                                                                      - name: Build
-                                                                                              run: ./gradlew assembleDebug
-                                                                                                    - uses: actions/upload-artifact@v4
-                                                                                                            with:
-                                                                                                                      name: stario-debug-apk
-                                                                                                                                path: app/build/outputs/apk/debug/app-debug.apk
-                                                                                                                                
+    branches: ["main", "master"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Gradle Build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: stario-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
