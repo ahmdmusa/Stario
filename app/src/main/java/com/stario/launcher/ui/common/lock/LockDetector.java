@@ -116,7 +116,7 @@ public class LockDetector extends DynamicGridLayout {
                         return true;
                     }
                 } else if (action == 1 || action == 2) {
-                    activity.getSheetsController().executeGestureAction(action);
+                    activity.getSheetsFocusController().executeGestureAction(action);
                     lastEventTime = NOT_REGISTERED;
                     return true;
                 }

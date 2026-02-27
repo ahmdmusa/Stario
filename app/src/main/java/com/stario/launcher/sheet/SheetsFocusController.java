@@ -208,19 +208,19 @@ public class SheetsFocusController extends ConstraintLayout {
                     if (sheetType == null) {
                         if (Math.abs(deltaY) > Math.abs(deltaX)) {
                             boolean swipeUp = Math.signum(deltaY) >= 0;
-                            int action = com.stario.launcher.settings.custom.CustomSettingsDataStore.getValueSync(
+                            int gestureAction = com.stario.launcher.settings.custom.CustomSettingsDataStore.getValueSync(
                                 getContext(), 
                                 swipeUp ? com.stario.launcher.settings.custom.CustomSettingsDataStore.GESTURE_UP : com.stario.launcher.settings.custom.CustomSettingsDataStore.GESTURE_DOWN, 
                                 swipeUp ? 1 : 2
                             );
                             
-                            if (action == 0) {
+                            if (gestureAction == 0) {
                                 sheetType = SheetType.UNDEFINED;
-                            } else if (action == 1) {
+                            } else if (gestureAction == 1) {
                                 sheetType = SheetType.BOTTOM_SHEET;
-                            } else if (action == 2) {
+                            } else if (gestureAction == 2) {
                                 sheetType = SheetType.TOP_SHEET;
-                            } else if (action == 3) {
+                            } else if (gestureAction == 3) {
                                 sheetType = SheetType.UNDEFINED;
                                 executeGestureAction(3);
                             } else {

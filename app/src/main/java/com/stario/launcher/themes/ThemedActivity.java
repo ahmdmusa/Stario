@@ -406,7 +406,7 @@ abstract public class ThemedActivity extends AppCompatActivity {
         Resources.Theme wrappedTheme = getThemeFor(theme, forceDark);
         wrappedTheme.resolveAttribute(attr, typedValue, true);
 
-        if (attr == com.google.android.material.R.attr.colorPrimary || attr == android.R.attr.colorAccent) {
+        if (attr == androidx.appcompat.R.attr.colorPrimary || attr == android.R.attr.colorAccent) {
             String customColor = CustomSettingsDataStore.getValueSync(
                     this, CustomSettingsDataStore.PRIMARY_COLOR, "");
             if (!customColor.isEmpty()) {
